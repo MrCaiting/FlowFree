@@ -1,5 +1,5 @@
 """utility.py file."""
-
+import itertools as itt
 # Assign Binary values for each directions
 UP = 0b0001         # decimal 1
 DOWN = 0b0010       # decimal 2
@@ -55,3 +55,13 @@ def valid_neighbors(i,j,width,height):
         if in_bound(x, y, width, height):
             neighbors.append((direction, x, y))
     return neighbors
+
+def x_or(variables):
+    #define function that performs logical XOR,
+    # ie. returns list that any two of the
+    # variables are different.
+    xor_list = []
+    combos = itt.combinations(variables,2)
+    for (x, y) in combos:
+        xor_list.append((-x, -y))
+    return xor_list
