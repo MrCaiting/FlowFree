@@ -46,7 +46,7 @@ def form_color_cnf(maze, all_colors):
         for j, cell in enumerate(maze):
             if cell.isalpha():      # Check if this cell is an endpoint
                 cell_color = all_colors[cell]
-                cnf.append[get_cell_cIndex(maze_width, i, j, all_colors, cell_color)]
+                cnf.append(get_cell_cIndex(maze_width, i, j, all_colors, cell_color))
 
                 # Since we have a color assigned, no more should be allowed
                 for key, value in all_colors.items():
