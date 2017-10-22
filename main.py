@@ -1,7 +1,9 @@
-"main function running the whole puzzle solver"
+"""main function running the whole puzzle solver."""
+
 from utility import *
 
 filename = 'puzzles/input55.txt'
+
 
 def flow_free_main():
 
@@ -10,8 +12,6 @@ def flow_free_main():
 
     print(board)
     print(colors)
-
-
 
 
 if __name__ == '__main__':
