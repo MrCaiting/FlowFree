@@ -7,7 +7,7 @@ LEFT = 0b0100       # decimal 4
 RIGHT = 0b1000      # decimal 8
 
 # Define all the possible movement on board with corresponding coordinate changes
-movements = [(UP, 1, 0), (DOWN, -1, 0), (LEFT, 0, -1), (RIGHT, 0, 1)]
+MOVES = [(UP, 1, 0), (DOWN, -1, 0), (LEFT, 0, -1), (RIGHT, 0, 1)]
 
 
 def read_board(file):
@@ -35,3 +35,23 @@ def read_board(file):
                     color_index = len(colors)
                     colors[cell] = color_index
     return board, colors
+
+def in_bound(i,j,width,height):
+    #check if a cell in on board
+    if i >= 0 and i < width and j >=0 and j < height:
+        return True
+
+def get_neighbors(i,j):
+    #get all neighbors of a cell
+    neighbors = []
+    for (direction, x, y) in MOVES:
+        neighbors.append((direction, i+x, j+y))
+    return neighbors
+
+def valid_neighbors(i,j,width,height):
+    #check for neighbors that is in bound
+    neighbors = []
+    for (direction, x, y) in get_neighbors(i,j):
+        if in_bound(x, y, width, height):
+            neighbors.append((direction, x, y))
+    return neighbors
