@@ -1,12 +1,11 @@
 """cell_colo.py file."""
-
-
-from utility import valid_neighbors, x_or
+from utility import or_seq
+from utility import valid_neighbors
+from utility import x_or
 
 
 def get_cell_cIndex(row_size, i, j, all_colors, curr_color):
-    """
-    get_cell_cIndex.
+    """get_cell_cIndex.
 
     DESCRIPTION: helper function used to return the calculated index of the
         the current cell based on its location and the color it has.
@@ -23,9 +22,29 @@ def get_cell_cIndex(row_size, i, j, all_colors, curr_color):
     return index
 
 
+def dir_sat_var(maze_height, maze, curr_cell):
+    maze_height = len(maze)     # Since the maze passed in is a list of rows
+    maze_width = len(maze[0])   # Get the number of columns
+    d_sat_var = dict()
+    var_count = 0
+
+    for i, rows in enumerate(maze):
+        for j, cell in enumerate(maze):
+            # Jump over all the enp
+            if cell.isalpha():
+                continue
+
+            neighbors = valid_neighbors(i, j, maze_width, maze_height)
+            # Make a list to hold all the direction bits from neighbors
+            all_nei_dir = []
+            for direction, _, _, in neighbors:
+                all_nei_dir.append(direction)
+
+            dir_result = or_seq(all_nei_dir)
+
+
 def form_color_cnf(maze, all_colors):
-    """
-    from_color_cnf.
+    """from_color_cnf.
 
     DESCRIPTION: use this method to generate a proper CNF based on the color
         assignment that we have. The constraints that we will apply here are:
