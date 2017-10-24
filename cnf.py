@@ -22,7 +22,7 @@ def get_cell_cIndex(row_size, i, j, all_colors, curr_color):
     return index
 
 
-def dir_sat_var(maze_height, maze, curr_cell):
+def dir_sat_var(maze, curr_cell):
     maze_height = len(maze)     # Since the maze passed in is a list of rows
     maze_width = len(maze[0])   # Get the number of columns
     d_sat_var = dict()
