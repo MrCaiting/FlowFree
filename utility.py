@@ -1,4 +1,5 @@
 """utility.py file."""
+from functools import reduce
 import itertools as itt
 
 # Some useful majic numbers
