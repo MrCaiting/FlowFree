@@ -88,12 +88,30 @@ def valid_neighbors(i, j, width, height):
 def x_or(variables):
     """x_or.
 
-    DESCRIPTION: define function that performs logical XOR,
+    DESCRIPTION: Define function that performs logical XOR,
         ie. returns list that any two of the
-        variables are different.
+        variables are different
+    INPUTS:
+        variables: a list of all SAT variables we'd like to compute
+    OUTPUTS:
+        xor_list: the result as a list
     """
     xor_list = []
     combos = itt.combinations(variables, PAIR)
     for (x, y) in combos:
         xor_list.append((-x, -y))
     return xor_list
+
+
+def or_seq(sequence):
+    """or_seq.
+
+    DESCRIPTION: Helper function to get the input as an interable sequence and
+        apply bitwise OR one each pair of elements in order
+    INPUTS:
+        sequence: an iterable sequence
+    OUTPUTS:
+        result: the result after applying OR
+    """
+    result = reduce(lambda x, y: x | y, sequence, 0)
+    return result
