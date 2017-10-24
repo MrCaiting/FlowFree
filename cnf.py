@@ -1,4 +1,5 @@
 """cell_colo.py file."""
+from utility import FLOWDIR
 from utility import or_seq
 from utility import valid_neighbors
 from utility import x_or
@@ -12,7 +13,7 @@ def get_cell_cIndex(row_size, i, j, all_colors, curr_color):
     INPUTS:
         1. row_size: how many columns exist in the board
         2. i,j: the coordinate that indicates where's the cell at
-        3. all_colors: a list of all colors that are avaible
+        3. all_colors: a list of all colors that are available
         4. curr_color: the current color of the cell
     OUTPUT:
         The calculated index
@@ -23,6 +24,17 @@ def get_cell_cIndex(row_size, i, j, all_colors, curr_color):
 
 
 def dir_sat_var(maze, curr_cell):
+    """dir_sat_var.
+
+    DESCRIPTION: get input current direction bit and check what future flow direction is
+        allowed.
+        The direction in FLOWDIR will contains all possible flow structure direction, but
+        not all of them will be available based on the information that we previously got
+        about which neighbors are available
+    INPUTS:
+        curr_dir: Binary bit string that contains the all possible neighbors direction
+        which is formed by previously applying bitwise OR on a sequence
+    """
     maze_height = len(maze)     # Since the maze passed in is a list of rows
     maze_width = len(maze[0])   # Get the number of columns
     d_sat_var = dict()
@@ -41,6 +53,15 @@ def dir_sat_var(maze, curr_cell):
                 all_nei_dir.append(direction)
 
             dir_result = or_seq(all_nei_dir)
+            d_sat_var[i, j] = dict()
+
+            for flow_dir in FLOWDIR:
+                if dir_result & flow_dir == flow_dir:
+                    # If this possible direction is possible, increase the count
+                    var_count = var_count + 1
+                    dir_sat_var[i, j][flow_dir] = curr_cell + var_count
+
+    return dir_sat_var, var_count
 
 
 def form_color_cnf(maze, all_colors):
