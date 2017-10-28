@@ -1,5 +1,7 @@
 """cell_colo.py file."""
 from utility import FLOWDIR
+from utility import get_neighbors
+from utility import in_bound
 from utility import or_seq
 from utility import valid_neighbors
 from utility import x_or
@@ -23,8 +25,8 @@ def get_cell_cIndex(row_size, i, j, all_colors, curr_color):
     return index
 
 
-def dir_sat_var(maze, curr_cell):
-    """dir_sat_var.
+def get_dir_var(maze, num_cvars):
+    """get_dir_var.
 
     DESCRIPTION: get input current direction bit and check what future flow direction is
         allowed.
@@ -59,9 +61,53 @@ def dir_sat_var(maze, curr_cell):
                 if dir_result & flow_dir == flow_dir:
                     # If this possible direction is possible, increase the count
                     var_count = var_count + 1
-                    dir_sat_var[i, j][flow_dir] = curr_cell + var_count
+                    d_sat_var[i, j][flow_dir] = num_cvars + var_count
 
-    return dir_sat_var, var_count
+    return d_sat_var, var_count
+
+
+def form_dir_cnf(maze, all_colors, d_sat_var):
+    """form_dir_cnf.
+    """
+    cnf = []
+
+    maze_height = len(maze)     # Since the maze passed in is a list of rows
+    maze_width = len(maze[0])   # Get the number of columns
+
+    for i, rows in enumerate(maze):
+        for j, cell in enumerate(rows):
+            if cell.isalpha():      # Check if this cell is an endpoint
+                continue            # if it is, just ignore it
+            # Getting the current cell's direction dictionary
+            curr_dir_dict = d_sat_var[(i, j)]
+            cell_dir_vars = curr_dir_dict.values()
+
+            # Start forming direction clauses here
+            cnf.append(cell_dir_vars)   # Since there need to be one direction assigned
+
+            # There should not be more than one flow directions co-exist
+            result = x_or(cell_dir_vars)
+            cnf.append = result
+
+            for value in all_colors.values():
+                # Acquire the current collor
+                curr_color = get_cell_cIndex(i, j, value)
+
+                for direction, dx, dy in get_neighbors(i, j):
+                    nei_color = get_cell_cIndex(dx, dy, value)
+
+                    for flow_dir, dir_var in curr_dir_dict.items():
+
+                        if flow_dir & direction:
+                            # If the directions are the same, should share the same color
+                            cnf.append([-dir_var, -curr_color, nei_color])
+                            cnf.append([-dir_var, curr_color, -nei_color])
+                        if in_bound(i, j, maze_width, maze_height):
+                            # neightbors have different flow direction assigned
+                            # therefore different colors
+                            cnf.append([-dir_var, -curr_color, -nei_color])
+
+    return cnf
 
 
 def form_color_cnf(maze, all_colors):
@@ -83,23 +129,23 @@ def form_color_cnf(maze, all_colors):
     maze_width = len(maze[0])   # Get the number of columns
 
     for i, rows in enumerate(maze):
-        for j, cell in enumerate(maze):
+        for j, cell in enumerate(rows):
             if cell.isalpha():      # Check if this cell is an endpoint
                 cell_color = all_colors[cell]
-                cnf.append(get_cell_cIndex(maze_width, i, j, all_colors, cell_color))
+                cnf.append([get_cell_cIndex(maze_width, i, j, all_colors, cell_color)])
 
                 # Since we have a color assigned, no more should be allowed
-                for key, value in all_colors.items():
+                for value in all_colors.values():
                     if value != cell_color:
 
                         # append negative value if the color is not right
-                        cnf.append(-get_cell_cIndex(maze_width, i, j, all_colors, value))
+                        cnf.append([-get_cell_cIndex(maze_width, i, j, all_colors, value)])
 
                 # Checking if the cell has neighbors with similar colors
                 neighbors = valid_neighbors(i, j, maze_width, maze_height)
                 nei_color = []
                 for _, di, dj in neighbors:
-                    nei_color.append(get_cell_cIndex(maze_width, di, dj, all_colors, cell_color))
+                    nei_color.append([get_cell_cIndex(maze_width, di, dj, all_colors, cell_color)])
 
                 cnf.append(nei_color)
 
@@ -107,7 +153,7 @@ def form_color_cnf(maze, all_colors):
 
             else:       # The place corresponds to an empty space
                 possible_colors = []
-                for key, value in all_colors.items():
+                for value in all_colors.values():
                     temp_index = get_cell_cIndex(maze_width, i, j, all_colors, value)
                     cnf.append(temp_index)
                     possible_colors.append(temp_index)
