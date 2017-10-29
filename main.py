@@ -1,8 +1,8 @@
 """main function running the whole puzzle solver."""
 
-from utility import read_board, valid_neighbors
-
-filename = 'puzzles/input55.txt'
+from utility import read_board, valid_neighbors, x_or, FLOWDIR
+from cnf import form_color_cnf, get_dir_var, form_dir_cnf
+filename = 'puzzles/regular_6x6_01.txt'
 
 
 def flow_free_main():
@@ -15,9 +15,17 @@ def flow_free_main():
     with open(filename, 'r', encoding='UTF-8') as input:
         board, colors = read_board(input)
 
-    print(len(board))
-    print(len(colors))
-    print(valid_neighbors(4, 4, 5, 5))
+    num_colors = len(colors)
+    # get dimensions of the board
+    width = len(board[0])
+    height = len(board)
+
+    num_cells = width * height
+    num_cvars = num_cells * num_colors
+    d_sat_var, var_count = get_dir_var(board, num_cvars)
+    clauses = form_dir_cnf(board, colors, d_sat_var)
+    print(clauses)
+
 
 
 if __name__ == '__main__':

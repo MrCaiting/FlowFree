@@ -2,9 +2,9 @@
 from utility import FLOWDIR
 from utility import get_neighbors
 from utility import in_bound
-from utility import or_seq
 from utility import valid_neighbors
 from utility import x_or
+import numpy
 
 
 def get_cell_cIndex(row_size, i, j, all_colors, curr_color):
@@ -43,7 +43,7 @@ def get_dir_var(maze, num_cvars):
     var_count = 0
 
     for i, rows in enumerate(maze):
-        for j, cell in enumerate(maze):
+        for j, cell in enumerate(rows):
             # Jump over all the enp
             if cell.isalpha():
                 continue
@@ -54,7 +54,9 @@ def get_dir_var(maze, num_cvars):
             for direction, _, _, in neighbors:
                 all_nei_dir.append(direction)
 
-            dir_result = or_seq(all_nei_dir)
+            dir_result = numpy.bitwise_or.reduce(all_nei_dir)
+
+            # dir_result = or_seq(all_nei_dir)
             d_sat_var[i, j] = dict()
 
             for flow_dir in FLOWDIR:
@@ -80,21 +82,21 @@ def form_dir_cnf(maze, all_colors, d_sat_var):
                 continue            # if it is, just ignore it
             # Getting the current cell's direction dictionary
             curr_dir_dict = d_sat_var[(i, j)]
-            cell_dir_vars = curr_dir_dict.values()
+            cell_dir_vars = list(curr_dir_dict.values())
 
             # Start forming direction clauses here
             cnf.append(cell_dir_vars)   # Since there need to be one direction assigned
 
             # There should not be more than one flow directions co-exist
             result = x_or(cell_dir_vars)
-            cnf.append = result
+            cnf.extend(result)
 
-            for value in all_colors.values():
+            for value in range(len(all_colors)):
                 # Acquire the current collor
-                curr_color = get_cell_cIndex(i, j, value)
+                curr_color = get_cell_cIndex(maze_width, i, j, all_colors, value)
 
                 for direction, dx, dy in get_neighbors(i, j):
-                    nei_color = get_cell_cIndex(dx, dy, value)
+                    nei_color = get_cell_cIndex(maze_width, dx, dy, all_colors, value)
 
                     for flow_dir, dir_var in curr_dir_dict.items():
 
@@ -102,7 +104,8 @@ def form_dir_cnf(maze, all_colors, d_sat_var):
                             # If the directions are the same, should share the same color
                             cnf.append([-dir_var, -curr_color, nei_color])
                             cnf.append([-dir_var, curr_color, -nei_color])
-                        if in_bound(i, j, maze_width, maze_height):
+                            continue
+                        if in_bound(dx, dy, maze_width, maze_height):
                             # neightbors have different flow direction assigned
                             # therefore different colors
                             cnf.append([-dir_var, -curr_color, -nei_color])
@@ -135,7 +138,7 @@ def form_color_cnf(maze, all_colors):
                 cnf.append([get_cell_cIndex(maze_width, i, j, all_colors, cell_color)])
 
                 # Since we have a color assigned, no more should be allowed
-                for value in all_colors.values():
+                for value in range(len(all_colors)):
                     if value != cell_color:
 
                         # append negative value if the color is not right
@@ -153,7 +156,7 @@ def form_color_cnf(maze, all_colors):
 
             else:       # The place corresponds to an empty space
                 possible_colors = []
-                for value in all_colors.values():
+                for value in range(len(all_colors)):
                     temp_index = get_cell_cIndex(maze_width, i, j, all_colors, value)
                     cnf.append(temp_index)
                     possible_colors.append(temp_index)

@@ -6,26 +6,29 @@ import itertools as itt
 PAIR = 2
 
 # Assign binary values for each directions
-UP = 0b0001         # decimal 1
-DOWN = 0b0010       # decimal 2
-LEFT = 0b0100       # decimal 4
-RIGHT = 0b1000      # decimal 8
+UP = 1         # decimal 1
+DOWN = 2       # decimal 2
+LEFT = 4       # decimal 4
+RIGHT = 8      # decimal 8
 
 # Assign binary values for the direction for each flow
 UPDOWN = UP | DOWN
 LRIGHT = LEFT | RIGHT
 UPRIGHT = UP | RIGHT
 UPLEFT = UP | LEFT
-DRIGHT = DOWN | LEFT
-DLEFT = DOWN | RIGHT
+DRIGHT = DOWN | RIGHT
+DLEFT = DOWN | LEFT
 
 # Define all the possible movement on board with corresponding coordinate changes
-MOVES = [(UP, 1, 0), (DOWN, -1, 0), (LEFT, 0, -1), (RIGHT, 0, 1)]
+MOVES = [(UP, -1, 0), (DOWN, 1, 0), (LEFT, 0, -1), (RIGHT, 0, 1)]
 
 # Define all the possible flow direction structures
-FLOWDIR = [UPDOWN, LRIGHT,
-           UPRIGHT, UPLEFT,
-           DRIGHT, DLEFT]
+FLOWDIR = [LRIGHT, UPDOWN,
+           UPLEFT, UPRIGHT,
+           DLEFT, DRIGHT]
+# FLOWDIR = [UPDOWN, LRIGHT,
+#           UPRIGHT, UPLEFT,
+#           DRIGHT, DLEFT]
 
 
 def read_board(file):
