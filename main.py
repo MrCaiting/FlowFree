@@ -1,9 +1,10 @@
 """main function running the whole puzzle solver."""
 
-from utility import read_board, valid_neighbors, x_or, FLOWDIR
-from cnf import form_color_cnf, get_dir_var, form_dir_cnf
-filename = 'puzzles/regular_6x6_01.txt'
+from utility import read_board
+from sat import sat
 
+FILENAME = 'puzzles/input55.txt'
+HEURISTIC = 'random'
 
 def flow_free_main():
     """flow_free_main.
@@ -12,21 +13,14 @@ def flow_free_main():
     INPUT: None
     OUTPUT: None
     """
-    with open(filename, 'r', encoding='UTF-8') as input:
+    with open(FILENAME, 'r', encoding='UTF-8') as input:
         board, colors = read_board(input)
 
-    num_colors = len(colors)
-    # get dimensions of the board
-    width = len(board[0])
-    height = len(board)
+    # reduce problem to sat
+    d_sat_var, num_vars, clauses, reduce_time = sat(board, colors)
 
-    num_cells = width * height
-    num_cvars = num_cells * num_colors
-    d_sat_var, var_count = get_dir_var(board, num_cvars)
-    clauses = form_dir_cnf(board, colors, d_sat_var)
-    print(clauses)
-
-
+    # input clauses into solver
+    solution = sat_solver(clauses, HEURISTIC)
 
 if __name__ == '__main__':
 

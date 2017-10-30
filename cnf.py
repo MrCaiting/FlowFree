@@ -148,18 +148,21 @@ def form_color_cnf(maze, all_colors):
                 neighbors = valid_neighbors(i, j, maze_width, maze_height)
                 nei_color = []
                 for _, di, dj in neighbors:
-                    nei_color.append([get_cell_cIndex(maze_width, di, dj, all_colors, cell_color)])
+                    nei_color.append(get_cell_cIndex(maze_width, di, dj, all_colors, cell_color))
 
                 cnf.append(nei_color)
-
                 cnf.extend(x_or(nei_color))
 
             else:       # The place corresponds to an empty space
                 possible_colors = []
+                temp_index = []
                 for value in range(len(all_colors)):
-                    temp_index = get_cell_cIndex(maze_width, i, j, all_colors, value)
-                    cnf.append(temp_index)
-                    possible_colors.append(temp_index)
+                    temp_index.append(get_cell_cIndex(maze_width, i, j, all_colors, value))
+
+                cnf.append(temp_index)
+
+                for value in range(len(all_colors)):
+                    possible_colors.append(get_cell_cIndex(maze_width, i, j, all_colors, value))
 
                 cnf.extend(x_or(possible_colors))
 

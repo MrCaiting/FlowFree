@@ -1,4 +1,6 @@
-from cnf import dir_sat_var, form_color_cnf, get_cell_cIndex, form_dir_cnf
+"""sat file converting problem to sat."""
+
+from cnf import get_dir_var, form_color_cnf, get_cell_cIndex, form_dir_cnf
 import time
 
 
@@ -26,12 +28,12 @@ def sat(board, colors):
     # start clocking
     start = time.clock()
 
-    # CNF of colors
-    c_cnf = form_color_cnf(board, colors)
-
     # CNF of directions
-    dvar, num_dvars = dir_sat_var(board, num_colors)
-    d_cnf = form_dir_cnf()
+    d_sat_var, num_dvars = get_dir_var(board, num_cvars)
+    dir_clauses = form_dir_cnf(board, colors, d_sat_var)
+
+    # CNF of colors
+    col_clauses = form_color_cnf(board, colors)
 
     # end time
     t = time.clock() - start
@@ -40,15 +42,15 @@ def sat(board, colors):
     num_vars = num_cvars + num_dvars
 
     # get total CNF
-    cnf = c_cnf + d_cnf
+    clauses = col_clauses + dir_clauses
 
-    return dvar, num_vars, cnf, t
+    return d_sat_var, num_vars, clauses, t
 
 
-def convert(board, colors, path):
-    """convert.
+def decode(board, colors, path):
+    """decode.
 
-    DESCRIPTION: convert back from one-hot vector to readable solutions.
+    DESCRIPTION: convert back from solved sat to readable solutions.
     INPUT:
         board: Game board
         colors: dictionary of colors
@@ -56,7 +58,6 @@ def convert(board, colors, path):
     OUTPUT:
         converted: a converted understandable list of the solution path.
     """
-
     # make a set of solution path
     path = set(path)
     converted = []
@@ -65,7 +66,7 @@ def convert(board, colors, path):
     # height = len(board)
 
     # get direction variables
-    dvar, _ = dir_sat_var(board, len(colors))
+    dvar, _ = get_dir_var(board, len(colors))
     for i, row in enumerate(board):
         # for each row create empty array
         rows = []
@@ -81,3 +82,9 @@ def convert(board, colors, path):
     converted.append(rows)
 
     return converted
+
+
+def path(converted, closed_list, i, j):
+    """path.
+
+    """
