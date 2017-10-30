@@ -6,10 +6,10 @@ import itertools as itt
 PAIR = 2
 
 # Assign binary values for each directions
-UP = 1         # decimal 1
-DOWN = 2       # decimal 2
-LEFT = 4       # decimal 4
-RIGHT = 8      # decimal 8
+UP = 4         # decimal 1
+DOWN = 8       # decimal 2
+LEFT = 1       # decimal 4
+RIGHT = 2      # decimal 8
 
 # Assign binary values for the direction for each flow
 UPDOWN = UP | DOWN
@@ -20,7 +20,7 @@ DRIGHT = DOWN | RIGHT
 DLEFT = DOWN | LEFT
 
 # Define all the possible movement on board with corresponding coordinate changes
-MOVES = [(UP, -1, 0), (DOWN, 1, 0), (LEFT, 0, -1), (RIGHT, 0, 1)]
+MOVES = [(LEFT, 0, -1), (RIGHT, 0, 1), (UP, -1, 0), (DOWN, 1, 0)]
 
 # Define all the possible flow direction structures
 FLOWDIR = [LRIGHT, UPDOWN,
@@ -103,7 +103,7 @@ def x_or(variables):
     xor_list = []
     combos = itt.combinations(variables, PAIR)
     for (x, y) in combos:
-        xor_list.append((-x, -y))
+        xor_list.append([-x, -y])
     return xor_list
 
 
