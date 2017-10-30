@@ -141,6 +141,14 @@ class Formula:
                 all_literals.append(literal)
         return all_literals
 
+    # Check if there is any pure literals. Used in pure
+    #   elimination. Quite usesless in our text though
+    def pure(self, literal):
+        for lit in self.get_all_literals():
+            if literal.opposite(lit):
+                return False
+        return True
+
     # Check if there is no clause contianed in this formula anymroe
     def isEmpty(self):
         if len(self.clauses) == 0:
@@ -189,3 +197,44 @@ class Formula:
     #   the entire CNF
     def splitting(self):
         return OPTIONS[self.heuristic](self)
+
+    # Unit Propagation: a very basic method used
+    #   in DPLL, we need to check if there is a clause with
+    #   just one single literal. If there is, we assign it
+    #   with True and simplify the CNF
+    def unitPropagation(self):
+        while True:
+            hasUnit = False
+
+            for clause in self.clauses:
+                theUnit = clause.isUnit()   # The literal or False
+
+                # If there is a unit literal
+                if theUnit:
+                    self.unit_Clause.appned(str(unit))
+                    # Assign True to the unit literal
+                    self.assgin(unit, True)
+
+                    hasUnit = True
+
+            if not hasUnit or self.has_emptyClause():
+                return
+
+    # Pure Elimination: if there is any literal in the CNF has
+    #   only a single polarity, we could eliminating it buy
+    #   simply assgining True
+    def pureElimination(self):
+        hasPure = True
+        all_literals = set(self.get_all_literals())
+
+        while hasPure:
+            hasPure = False
+
+            for literal in all_literals:
+                if self.pure(literal):
+
+                    self.assgin(literal, True)
+                    self.pure_Literals.append(str(literal))
+                    hasPure = True
+
+                    break
