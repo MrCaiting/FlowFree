@@ -158,7 +158,7 @@ class Formula:
     # Get the solution
     def get_solution(self):
         result = sorted(self.solution, key=lambda i: abs(int(i)))
-    return result
+        return result
 
     # Applying the current valuation and get simplified
     #   version of the formula
@@ -167,14 +167,13 @@ class Formula:
     # Clauses that has literals are False should have all
     #   of them deleted
     def simplify(self):
-        self.clauses = filter(
-            lambda clause: len(filter(
-                lambda literal: literal.value(),  clause.all_literals)) == 0, self.clauses)
+
+        self.clauses = [clause for clause in self.clauses if len(
+            [literal for literal in clause.all_literals if literal.value()]) == 0]
 
         for clause in self.clauses:
-            clause.all_literals = filter(
-                lambda literal: literal.value() is not False,
-                clause.all_literals)
+            clause.all_literals = [
+                literal for literal in clause.all_literals if literal.value() is not False]
 
     # Apply value assginment to the literal in the CNF
     def assgin(self, literal, val):
