@@ -103,6 +103,10 @@ class Clause:
         else:
             return False
 
+    # A method to return the clause itself
+    def theClause(self):
+        return Clause(self.all_literals)
+
 
 class Formula:
     """Formula.
@@ -167,6 +171,17 @@ class Formula:
     def get_solution(self):
         result = sorted(self.solution, key=lambda i: abs(int(i)))
         return result
+
+    # A function that return this CNF Fomula as a copy
+    def theForomula(self):
+        # Get a copy of each of the feilds a the current CNF Fomula
+        solution = list.solutions
+        heu = self.heuristicsFcn
+        unit_c = self.unit_Clause
+        pure_l = self.pure_Literals
+
+        clausesCp = [clause.theClause for clause in self.clauses]
+        return Formula(clausesCp, unit_c, pure_l, solution, heu)
 
     # Applying the current valuation and get simplified
     #   version of the formula
