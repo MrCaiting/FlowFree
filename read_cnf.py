@@ -36,7 +36,8 @@ def convert(clauses, option):
     variables = {i: structure.Var(i) for i in get_variables(clauses)}
 
     # get literals
-    literals = {i: structure.Literal(variables[abs(i)], (i >= 0)) for i in set(get_literals(clauses))}
+    literals = {i: structure.Literal(variables[abs(i)], (
+        i >= 0)) for i in set(get_literals(clauses))}
 
     # set clauses
     clauses = structure.Clause(clauses)
