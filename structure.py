@@ -28,6 +28,9 @@ class Var:
     def __hash__(self):
         return hash(self.identifier)
 
+    def __repr__(self):
+        return str(self.identifier)
+
     # Class method
     def assign(self, v):
         self.assignment = v
@@ -50,6 +53,9 @@ class Literal:
     # Hashing by the sum of it's polarity and variable ID
     def __hash__(self):
         return hash(self.polarity) + hash(self.var_name)
+
+    def __repr__(self):
+        return str(self.var_name) if self.polarity else '-' + str(self.var_name)
 
     # Check if the given new literal is actually the same variable
     #   as the current one but only with opposite polarity
@@ -85,6 +91,9 @@ class Clause:
 
     def __init__(self, all_literals):
         self.all_literals = all_literals
+
+    def __repr__(self):
+        return str([ literal for literal in self.all_literals])
 
     # A method to check if the current clause is actually empty
     # This information is helpful since empty clause makes the
@@ -137,6 +146,9 @@ class Formula:
         self.solution = solution
         self.heuristicsFcn = heuristicsFcn
 
+    def __repr__(self):
+        return str([clause for clause in self.clauses])
+
     # Aquire all the literals showed up in the formula
     def get_all_literals(self):
         all_literals = []
@@ -149,7 +161,7 @@ class Formula:
     #   elimination. Quite usesless in our text though
     def pure(self, literal):
         for lit in self.get_all_literals():
-            if literal.opposite(lit):
+            if literal.opp_var(lit):
                 return False
         return True
 
@@ -169,18 +181,20 @@ class Formula:
 
     # Get the solution
     def get_solution(self):
-        result = sorted(self.solution, key=lambda i: abs(int(i)))
-        return result
+        # Test line
+        # print("The current solution: ", self.solution)
+
+        return sorted(self.solution, key=lambda i: abs(int(i)))
 
     # A function that return this CNF Fomula as a copy
     def theForomula(self):
         # Get a copy of each of the feilds a the current CNF Fomula
-        solution = list.solutions
+        solution = list(self.solution)
         heu = self.heuristicsFcn
-        unit_c = self.unit_Clause
-        pure_l = self.pure_Literals
+        unit_c = list(self.unit_Clause)
+        pure_l = list(self.pure_Literals)
 
-        clausesCp = [clause.theClause for clause in self.clauses]
+        clausesCp = [clause.theClause() for clause in self.clauses]
         return Formula(clausesCp, unit_c, pure_l, solution, heu)
 
     # Applying the current valuation and get simplified
@@ -190,17 +204,16 @@ class Formula:
     # Clauses that has literals are False should have all
     #   of them deleted
     def simplify(self):
-
-        self.clauses = [clause for clause in self.clauses if len(
-            [literal for literal in clause.all_literals if literal.value()]) == 0]
+        # print(self.clauses)
+        self.clauses = [c for c in self.clauses if len([l for l in c.all_literals if l.get_val()]) == 0]
 
         for clause in self.clauses:
             clause.all_literals = [
-                literal for literal in clause.all_literals if literal.value() is not False]
+                literal for literal in clause.all_literals if literal.get_val() is not False]
 
     # Apply value assginment to the literal in the CNF
     def assgin(self, literal, val):
-        if value:
+        if val:
             # put this assignement on the list firt as a string
             self.solution.append(str(literal))
         literal.assign(val)
@@ -211,7 +224,7 @@ class Formula:
     # Using heuristic function to choose a literal to split
     #   the entire CNF
     def splitting(self):
-        return OPTIONS[self.heuristic](self)
+        return OPTIONS[self.heuristicsFcn](self)
 
     # Unit Propagation: a very basic method used
     #   in DPLL, we need to check if there is a clause with
@@ -226,9 +239,9 @@ class Formula:
 
                 # If there is a unit literal
                 if theUnit:
-                    self.unit_Clause.appned(str(unit))
+                    self.unit_Clause.append(str(theUnit))
                     # Assign True to the unit literal
-                    self.assgin(unit, True)
+                    self.assgin(theUnit, True)
 
                     hasUnit = True
 

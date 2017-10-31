@@ -23,7 +23,7 @@ def get_literals(cnf):
 
     DESCRIPTION: for convenience getting every element in the cnf
     """
-    return [j for i in cnf for j in i]
+    return [int(j) for i in cnf for j in i]
 
 
 def convert(clauses, option):
@@ -32,18 +32,28 @@ def convert(clauses, option):
     DESCRIPTION: setup structures
 
     """
+    abs_var = get_variables(clauses)
+
     # get unique variables
-    variables = {i: structure.Var(i) for i in get_variables(clauses)}
+    variables = {i: structure.Var(i) for i in set(abs_var)}
+
+    # Test line
+    # print("1 Formed Variable:", variables)
 
     # get literals
     literals = {i: structure.Literal(variables[abs(i)], (
         i >= 0)) for i in set(get_literals(clauses))}
 
+    # Test line
+    # print("Formed Literal:", literals)
+
     # set clauses
-    clauses = structure.Clause(clauses)
+    clauses = [structure.Clause([literals[int(l)] for l in clause]) for clause in clauses]
+    # Test line
+    # print("Formed Literal:", clauses[1].all_literals)
 
     print("Input number of clauses to the solver: %s" % len(clauses))
     print("Input number of variables to the solver: %s" % len(variables))
-    print("Input number of literals to the solver: %s" % len(literals))
+    print("Input number of literals to the solver: %s\n" % len(literals))
 
-    return structure.Formula(clauses, [], option, [], [])
+    return structure.Formula(clauses, [], [], [], option)

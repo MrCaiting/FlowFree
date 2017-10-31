@@ -1,7 +1,7 @@
 """A generic function used for solving SAT problem."""
 
 
-def solve(cnf, heuristic, branch):
+def solve(cnf, branch):
     """solve.
 
     DESCRIPTION: A function used to solve the CNF appling the DPLL
@@ -35,13 +35,13 @@ def solve(cnf, heuristic, branch):
 
     # After these two simplifications, we need to check if there is any
     #   clause becomes empty
-    if cnf.emptyClause():
+    if cnf.has_emptyClause():
         branch[0] += 1
         return False
 
     # If the CNF has no more clause to apply valuation, then a solution has
     #   been fount. Return immediately
-    if cnf.empty():
+    if cnf.isEmpty():
         return cnf
 
     # Since the CNF is not empty, nor we have found a failed valuation map, we
@@ -56,4 +56,4 @@ def solve(cnf, heuristic, branch):
     cnf.assgin(heu_literal, True)
     cnfCp.assgin(heu_literal, False)
 
-    return solve(cnf, heuristic, branch) or solve(cnfCp, heuristic, branch)
+    return solve(cnf, branch) or solve(cnfCp, branch)

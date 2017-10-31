@@ -30,6 +30,11 @@ FLOWDIR = [LRIGHT, UPDOWN,
 #           UPRIGHT, UPLEFT,
 #           DRIGHT, DLEFT]
 
+# ANSI_CODES
+COLOR_ANSI = dict(B=104, R=101, G=42, Y=103, O=43)
+ANSI_RESET = '\033[0m'
+ANSI_FORMAT = '\033[30;{}m'
+
 
 def read_board(file):
     """read_board.
