@@ -41,11 +41,12 @@ def convert(clauses, option):
     # print("1 Formed Variable:", variables)
 
     # get literals
-    literals = {i: structure.Literal(variables[abs(i)], (
-        i >= 0)) for i in set(get_literals(clauses))}
+
+    literals = { i: structure.Literal(variables[abs(i)], (
+        i >= 0)) for i in set(get_literals(clauses)) }
 
     # Test line
-    # print("Formed Literal:", literals)
+    # print("LIT", literals)
 
     # set clauses
     clauses = [structure.Clause([literals[int(l)] for l in clause]) for clause in clauses]

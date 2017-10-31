@@ -30,7 +30,7 @@ def occurance_counter(clauses):
 
             ref[(literal.var_name, literal.polarity)] = literal
 
-        added = {key: value[0] + value[1] for key, value in list(score.items())}
+    added = {key: value[0] + value[1] for key, value in list(score.items())}
 
     # get max occurance
     m = max(added, key=added.get)
@@ -40,7 +40,7 @@ def occurance_counter(clauses):
         polarity = True
     else:
         polarity = False
-
+    # print("REF:", ref)
     return ref[(m, polarity)]
 
 
@@ -65,11 +65,11 @@ def min_size_clause(clauses):
 # Freeman's POSIT Maximum Occurance in clauses of Minimum Size
 def POSIT(cnf):
     # Test line
-    print("HERE")
+    # print("HERE")
 
     # get clauses with minimum size
-    min_clauses = min_size_clause(cnf.clauses)
-    return occurance_counter(min_clauses)
+    min_c = min_size_clause(cnf.clauses)
+    return occurance_counter(min_c)
 
 
 # global variables of heuristics option

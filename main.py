@@ -6,7 +6,7 @@ from sat import sat, decode, visualize
 from solver import solve
 from time import clock
 
-FILENAME = 'puzzles/input77.txt'
+FILENAME = 'puzzles/input991.txt'
 # choose random_heuristic or POSIT
 HEURISTIC = 'POSIT'
 # Enable color print mode in terminal
@@ -35,18 +35,20 @@ def flow_free_main():
     # input clauses into solver
     # clock time
     branch_count = [0, 0]
-    print("Solving the Problem Using [%s] Heuristic...\n" % HEURISTIC)
+    print("Solving the Problem Using DPLL with [%s] Heuristic ...\n" % HEURISTIC)
     start = clock()
-    solved_cnf = solve(CNF, branch_count)
+    # branch[0] is count of failure, branch[1] is count of success
+    solved_cnf, branch = solve(CNF, branch_count)
     solve_time = clock() - start
 
     print("Time Used on Solving the SAT Problem: %.5f seconds\n" % solve_time)
-
+    print("Failed Splits: ", branch[0])
+    print("Successful Splites: ", branch[1])
     # Get the solution from the returing list
     solution = solved_cnf.get_solution()
 
     # Test line
-    print("SAT Solution: ", solution)
+    # print("SAT Solution: ", solution)
     # print("Type of sol: ", type(solution))
 
     # decode the solution

@@ -42,13 +42,14 @@ def solve(cnf, branch):
     # If the CNF has no more clause to apply valuation, then a solution has
     #   been fount. Return immediately
     if cnf.isEmpty():
-        return cnf
+        return cnf, branch
 
     # Since the CNF is not empty, nor we have found a failed valuation map, we
     #   need to keep branching, and update the branching counter
+    # print("DEBUG: ", len(cnf.clauses))
     heu_literal = cnf.splitting()
     branch[1] += 1
-
+    # print("Chosen: ", heu_literal)
     # First of copying the current CNF for different assignment on chosen literal
     cnfCp = cnf.theForomula()
 

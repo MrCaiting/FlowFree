@@ -45,7 +45,7 @@ def sat(board, colors):
 
     # get total CNF
     clauses = col_clauses + dir_clauses
-    print("CNF: ", clauses)
+    # print("CNF: ", clauses)
     # print("d_sat_var:", d_sat_var)
     return d_sat_var, num_vars, clauses, t
 
